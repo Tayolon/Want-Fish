@@ -1,6 +1,6 @@
-# ========================
+# =========================
 # Unity generated folders
-# ========================
+# =========================
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -9,22 +9,31 @@
 [Ll]ogs/
 [Mm]emoryCaptures/
 
-# ========================
-# User & IDE files
-# ========================
+# =========================
+# User & editor settings
+# =========================
 UserSettings/
 .vscode/
 .idea/
 .vs/
 
-# ========================
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Crash reports
+# =========================
+sysinfo.txt
+
+# =========================
 # Visual Studio / Rider
-# ========================
+# =========================
 *.csproj
-*.unityproj
 *.sln
 *.suo
-*.tmp
 *.user
 *.userprefs
 *.pidb
@@ -34,28 +43,9 @@ UserSettings/
 *.opendb
 *.VC.db
 
-# ========================
-# Unity meta & crash files
-# ========================
-sysinfo.txt
-*.pidb.meta
-*.pdb.meta
-
-# ========================
-# Build outputs
-# ========================
+# =========================
+# Unity packages (optional)
+# =========================
 *.apk
 *.aab
 *.unitypackage
-*.app
-*.exe
-
-# ========================
-# Asset Store tools
-# ========================
-Assets/AssetStoreTools*
-
-# ========================
-# Plastic SCM (Unity Version Control)
-# ========================
-.plastic/
