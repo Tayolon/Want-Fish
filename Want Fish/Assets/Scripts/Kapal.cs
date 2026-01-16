@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class Kapal : Interaction
 {
-    public string sceneTujuan = "GantiHari";
+    public string sceneTujuan = "MainGame";
 
     public override void Interact()
     {

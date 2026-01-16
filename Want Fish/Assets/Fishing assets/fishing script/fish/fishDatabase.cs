@@ -8,6 +8,7 @@ public class FishDatabase : MonoBehaviour
 {
     public static FishDatabase Instance;
 
+    public float highRarityBonusPercent = 0f;
     public List<FishData> allFish;
     public FishData currentFish;
 
@@ -56,9 +57,16 @@ public class FishDatabase : MonoBehaviour
         // Tier-based roll
         foreach (var rarity in rarityList)
         {
+            float finalChance = rarity.biteChance;
+
+            if (rarity.rarity >= FishRarity.Legendary)
+            {
+                finalChance *= (1f + highRarityBonusPercent);
+            }
+
             float roll = Random.Range(0f, 100f);
 
-            if (roll <= rarity.biteChance)
+            if (roll <= finalChance)
             {
                 Debug.Log("ROLL SUCCESS: " + rarity.rarity);
                 return rarity;

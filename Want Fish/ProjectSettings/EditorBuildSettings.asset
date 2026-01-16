@@ -5,12 +5,21 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/Persiapan.unity
+  - enabled: 0
+    path: Assets/Scripts/Scenes/Persiapan.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
-    path: Assets/Scenes/GantiHari.unity
+  - enabled: 0
+    path: Assets/Scripts/Scenes/GantiHari.unity
     guid: a8e4b912c8d3dcc4286bb0532a235cb7
+  - enabled: 1
+    path: Assets/Scenes/FishingHub.unity
+    guid: 5a536848091ae854daf806056ccf688a
+  - enabled: 1
+    path: Assets/Scenes/Rougelike.unity
+    guid: 78438c7cadae8174bbffaaeddf0a2e0e
+  - enabled: 1
+    path: Assets/Scenes/MainGame.unity
+    guid: 900eeb5b1f0514545988d7b998d16b55
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -17,5 +17,5 @@ MonoBehaviour:
   rarityData: {fileID: 11400000, guid: 304f15e6a3dc34eb59c951286560fa33, type: 2}
   fishSprite: {fileID: 8966945178157639174, guid: 584edd2849a7340e9852c8c0723262d2, type: 3}
   minWeight: 1
-  maxWeight: 20
-  baseValue: 0
+  maxWeight: 10
+  baseValue: 20

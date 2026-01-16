@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634347378448946c88d06c467a5f382c, type: 3}
   m_Name: epic
   m_EditorClassIdentifier: 
-  rarity: 1
+  rarity: 3
   biteChance: 0
   minSP: 0
   maxSP: 0

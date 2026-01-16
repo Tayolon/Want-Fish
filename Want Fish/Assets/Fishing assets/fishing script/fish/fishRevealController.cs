@@ -5,7 +5,9 @@ using TMPro;
 
 public class FishRevealController : MonoBehaviour
 {
+    public GameTimer gameTimer;
     [Header("UI")]
+    public GameObject fishRevealUI;
     public GameObject darkOverlay;
     public GameObject rarityPanel;
     public GameObject fishPanel;
@@ -43,6 +45,7 @@ bool isRevealing;
 
 public void ShowFish(FishData fish)
 {
+    fishRevealUI.SetActive(true);
     StopAllCoroutines();
     isRevealing = true;
     StartCoroutine(RevealSequence(fish));
@@ -120,6 +123,7 @@ public bool IsShowing()
     darkOverlay.SetActive(false);
     rarityPanel.SetActive(false);
     fishPanel.SetActive(false);
+    fishRevealUI.SetActive(false);
 }
 
 
@@ -148,6 +152,7 @@ public bool IsShowing()
     // Klik kiri / tap layar
     if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
     {
+        gameTimer.timerRunning = true;
         Hide();
     }
 }

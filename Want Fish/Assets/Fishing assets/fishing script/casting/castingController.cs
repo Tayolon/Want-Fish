@@ -4,6 +4,7 @@ using System.Collections;
 
 public class CastingController : MonoBehaviour
 {
+    public static CastingController Instance;
     public RectTransform bar;
     public RectTransform indicator;
     public float speed = 600f;
@@ -52,9 +53,16 @@ public FishBiteController fishBiteUI;
 public ReelingController reelingController;
 public FishDatabase fishDatabase;
 
-
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
     void Start()
     {
+        ApplyPermanentUpgrades();
         redLimit = bar.rect.width / 2f;
         orangeLimit = redLimit * 0.7f;
         greenLimit = redLimit * 0.4f;
@@ -72,19 +80,40 @@ public FishDatabase fishDatabase;
             direction *= -1;
     }
 
+    void ApplyPermanentUpgrades()
+    {
+        int bobberLevel =
+            PermanentUpgradeManager.Instance.GetLevel("bobber");
+
+        float modifier = Mathf.Pow(0.85f, bobberLevel);
+
+        minBiteTime *= modifier;
+        maxBiteTime *= modifier;
+    }
+
 public void StartCasting()
 {
+    if (InventoryManager.Instance != null &&
+        InventoryManager.Instance.IsFull())
+    {
+        Debug.Log("inv full [CastingController]");
+        return;
+    }
+
     if (isWaitingFish) return;
+    if (IsBusy()) return;
 
     castingBarUI.SetActive(true);
     isCasting = true;
     direction = 1;
+
     indicator.anchoredPosition =
         new Vector2(-redLimit, indicator.anchoredPosition.y);
 
     reelDifficulty = 0;
     RandomizeLayerPositions();
 }
+
 
 
 bool IsInside(RectTransform layer, float indicatorX)

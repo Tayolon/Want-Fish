@@ -1,9 +1,25 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MasEMas : Interaction
 {
+
+    public GameObject shopScreen;
+    public Button ExitBtn;
+
     public override void Interact()
     {
-        Debug.Log("hARi yAnG INdAH UntUK MEmANciNg! ATaU HaRuS KU biLaNg.. BeRBisNiS?");
+        shopScreen.SetActive(true);
+    }
+
+    void Awake()
+    {
+        if (ExitBtn != null)
+        ExitBtn.onClick.AddListener(Close);
+    }
+
+    void Close()
+    {
+        shopScreen.SetActive(false);
     }
 }

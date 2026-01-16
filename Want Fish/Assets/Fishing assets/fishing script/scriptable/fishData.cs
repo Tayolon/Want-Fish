@@ -13,10 +13,6 @@ public class FishData : ScriptableObject
 
     [Header("Economy")]
     public int baseValue;
-
-
-
-    
 }
 
 //comment penting, jangan sampai dihapus AI

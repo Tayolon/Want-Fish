@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ReelingController : MonoBehaviour
 {
+    public static ReelingController Instance;
+    public GameTimer gameTimer;
     private float baseTargetSpeed;
+    
 
 // base value (buat reset / fallback)
 float baseMinMoveDuration;
@@ -93,6 +97,15 @@ public enum ReelingState
 
 void Awake()
 {
+    if (Instance == null)
+        Instance = this;
+    else
+    {
+        Destroy(gameObject);
+        return;
+    }
+    
+    baseGreenHeight = baseGreenHeight;
     baseTargetSpeed = targetSpeed;
 
     baseMinMoveDuration = minMoveDuration;
@@ -110,10 +123,38 @@ void Awake()
 
 void OnEnable()
 {
+    SceneManager.sceneLoaded += OnSceneLoaded;
     state = ReelingState.None;
     Debug.Log("Reeling Update jalan");
-
 }
+
+void OnDisable()
+{
+    SceneManager.sceneLoaded -= OnSceneLoaded;
+}
+
+void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    ApplyPermanentUpgrades();
+}
+
+void ApplyPermanentUpgrades()
+{
+    baseGreenHeight = 120f;
+    spGainPerSecond = 1f;
+
+    int hookLevel =
+        PermanentUpgradeManager.Instance.GetLevel("hook");
+
+    baseGreenHeight += hookLevel * 15f;
+
+    int lineLevel =
+        PermanentUpgradeManager.Instance.GetLevel("line");
+
+    spGainPerSecond += lineLevel * 1f;
+}
+
+
 
 public bool IsReeling()
 {
@@ -124,7 +165,7 @@ public bool IsReeling()
    public void StartReeling(FishRarityData rarityData, int reelDifficulty)
 
 {
-
+        gameTimer.timerRunning = false;
         PickNewTargetBehavior();
 
 // ==========================
@@ -194,6 +235,7 @@ targetLine.anchoredPosition =
 
         reelingUI.SetActive(true);
 //good luck mahamin code nya
+//WOW MAKASIH
         requiredSP = Random.Range(
             rarityData.minSP,
             rarityData.maxSP
@@ -360,17 +402,41 @@ void PickNewTargetBehavior()
 }
    #endregion
 
-void Success()
-{
-    state = ReelingState.Success;
-    reelingUI.SetActive(false);
+    void Success()
+    {
+        state = ReelingState.Success;
+        reelingUI.SetActive(false);
 
-    FishData fish = FishDatabase.Instance.currentFish;
-    FishRevealController reveal =
-        FindObjectOfType<FishRevealController>();
+        FishData fish = FishDatabase.Instance.currentFish;
 
-    reveal.ShowFish(fish);
-}
+        CaughtFish caught = CreateCaughtFish(fish);
+
+        FindObjectOfType<FishRevealController>()
+            .ShowFish(fish);
+
+        Debug.Log("succ ess");
+        InventoryManager.Instance.AddFish(caught);
+    }
+
+    CaughtFish CreateCaughtFish(FishData fish)
+    {
+        float weight = Random.Range(
+            fish.minWeight,
+            fish.maxWeight
+        );
+
+        int value = Mathf.RoundToInt(
+            fish.baseValue * weight
+        );
+
+        return new CaughtFish
+        {
+            data = fish,
+            weight = weight,
+            value = value
+        };
+    }
+
 
 
     void Fail()
