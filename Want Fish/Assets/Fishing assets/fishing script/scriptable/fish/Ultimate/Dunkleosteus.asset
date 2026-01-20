@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Dunkleosteus
+  m_EditorClassIdentifier: 
+  fishName: Dunkleosteus
+  rarity: 8
+  rarityData: {fileID: 11400000, guid: 2bd562e50afb34027bca3425d53c4af1, type: 2}
+  fishSprite: {fileID: -1704864757828439777, guid: 84c4d99bb3bfb45428496f450f4f30f9, type: 3}
+  minWeight: 2000
+  maxWeight: 2020
+  baseValue: 2

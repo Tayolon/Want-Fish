@@ -6,20 +6,30 @@ public class ReelingController : MonoBehaviour
     public static ReelingController Instance;
     public GameTimer gameTimer;
     private float baseTargetSpeed;
-    
 
-// base value (buat reset / fallback)
-float baseMinMoveDuration;
-float baseMaxMoveDuration;
-float baseMinIdleDuration;
-float baseMaxIdleDuration;
-float baseMinSpeedMultiplier;
-float baseMaxSpeedMultiplier;
+    private Animator animator;  
 
-float baseBurstChance;
-float baseBurstSpeedMultiplier;
-float baseMinBurstDuration;
-float baseMaxBurstDuration;
+
+    // base value (buat reset / fallback)
+    float baseMinMoveDuration;
+    float baseMaxMoveDuration;
+    float baseMinIdleDuration;
+    float baseMaxIdleDuration;
+    float baseMinSpeedMultiplier;
+    float baseMaxSpeedMultiplier;
+
+    float baseBurstChance;
+    float baseBurstSpeedMultiplier;
+    float baseMinBurstDuration;
+    float baseMaxBurstDuration;
+
+    public AudioClip reelingLoopSound;
+    public float reelingVolume = 0.5f;
+    private AudioSource reelingAudio;
+
+    public AudioClip fishCaughtSoundA;
+    public AudioClip fishCaughtSoundB;
+    public float fishCaughtVolume = 0.7f;
 
 
     [Header("UI")]
@@ -29,8 +39,8 @@ float baseMaxBurstDuration;
     public UnityEngine.UI.Slider progressBar;
 
     [Header("Green Zone Size")]
-public float baseGreenHeight = 120f;   // ukuran normal
-public float shrinkPerDifficulty = 6f; // tiap 1 difficulty menyusut berapa px
+    public float baseGreenHeight = 120f;   // ukuran normal
+    public float shrinkPerDifficulty = 6f; // tiap 1 difficulty menyusut berapa px
 
 
     [Header("Grace Time")]
@@ -50,14 +60,14 @@ public float shrinkPerDifficulty = 6f; // tiap 1 difficulty menyusut berapa px
     bool isIdle;
     float currentSpeedMultiplier;
 
-[Header("Target Burst Speed")]
-public float burstChance = 0.2f; // 20% chance jadi burst
-public float burstSpeedMultiplier = 2.2f;
+    [Header("Target Burst Speed")]
+    public float burstChance = 0.2f; // 20% chance jadi burst
+    public float burstSpeedMultiplier = 2.2f;
 
-public float minBurstDuration = 0.15f;
-public float maxBurstDuration = 0.4f;
+    public float minBurstDuration = 0.15f;
+    public float maxBurstDuration = 0.4f;
 
-bool isBurst;
+    bool isBurst;
 
 
     [Header("Movement")]
@@ -76,166 +86,181 @@ bool isBurst;
     private float targetDirection = 1;
 
     [Header("Bounds")]
-public RectTransform blueBar;
-float greenMinY;
-float greenMaxY;
-float targetMinY;
-float targetMaxY;
+    public RectTransform blueBar;
+    float greenMinY;
+    float greenMaxY;
+    float targetMinY;
+    float targetMaxY;
 
 
-public enum ReelingState
-{
-    None,
-    Active,
-    Success,
-    Fail
-}
+    public enum ReelingState
+    {
+        None,
+        Active,
+        Success,
+        Fail
+    }
 
     private ReelingState state;
 
     #region START
 
-void Awake()
-{
-    if (Instance == null)
-        Instance = this;
-    else
+    void Awake()
     {
-        Destroy(gameObject);
-        return;
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        animator = GetComponent<Animator>();
+        baseTargetSpeed = targetSpeed;
+
+        reelingAudio = GetComponent<AudioSource>();
+        if (reelingAudio == null)
+            reelingAudio = gameObject.AddComponent<AudioSource>();
+
+        reelingAudio.playOnAwake = false;
+        reelingAudio.loop = true;
+
+        baseMinMoveDuration = minMoveDuration;
+        baseMaxMoveDuration = maxMoveDuration;
+        baseMinIdleDuration = minIdleDuration;
+        baseMaxIdleDuration = maxIdleDuration;
+        baseMinSpeedMultiplier = minSpeedMultiplier;
+        baseMaxSpeedMultiplier = maxSpeedMultiplier;
+
+        baseBurstChance = burstChance;
+        baseBurstSpeedMultiplier = burstSpeedMultiplier;
+        baseMinBurstDuration = minBurstDuration;
+        baseMaxBurstDuration = maxBurstDuration;
     }
-    
-    baseGreenHeight = baseGreenHeight;
-    baseTargetSpeed = targetSpeed;
 
-    baseMinMoveDuration = minMoveDuration;
-    baseMaxMoveDuration = maxMoveDuration;
-    baseMinIdleDuration = minIdleDuration;
-    baseMaxIdleDuration = maxIdleDuration;
-    baseMinSpeedMultiplier = minSpeedMultiplier;
-    baseMaxSpeedMultiplier = maxSpeedMultiplier;
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        state = ReelingState.None;
+        Debug.Log("Reeling Update jalan");
+    }
 
-    baseBurstChance = burstChance;
-    baseBurstSpeedMultiplier = burstSpeedMultiplier;
-    baseMinBurstDuration = minBurstDuration;
-    baseMaxBurstDuration = maxBurstDuration;
-}
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 
-void OnEnable()
-{
-    SceneManager.sceneLoaded += OnSceneLoaded;
-    state = ReelingState.None;
-    Debug.Log("Reeling Update jalan");
-}
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyPermanentUpgrades();
+    }
 
-void OnDisable()
-{
-    SceneManager.sceneLoaded -= OnSceneLoaded;
-}
+    void ApplyPermanentUpgrades()
+    {
+        baseGreenHeight = 120f;
+        spGainPerSecond = 1f;
 
-void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-{
-    ApplyPermanentUpgrades();
-}
+        int hookLevel =
+            PermanentUpgradeManager.Instance.GetLevel("hook");
 
-void ApplyPermanentUpgrades()
-{
-    baseGreenHeight = 120f;
-    spGainPerSecond = 1f;
+        baseGreenHeight += hookLevel * 15f;
 
-    int hookLevel =
-        PermanentUpgradeManager.Instance.GetLevel("hook");
+        int lineLevel =
+            PermanentUpgradeManager.Instance.GetLevel("line");
 
-    baseGreenHeight += hookLevel * 15f;
-
-    int lineLevel =
-        PermanentUpgradeManager.Instance.GetLevel("line");
-
-    spGainPerSecond += lineLevel * 1f;
-}
+        spGainPerSecond += lineLevel * 1f;
+    }
 
 
 
-public bool IsReeling()
-{
-    return state == ReelingState.Active;
-}
+    public bool IsReeling()
+    {
+        return state == ReelingState.Active;
+    }
 
-//start-----------------------------------------sefoksofhsfkdshvishdliugeldknvkfvkdhfkeyginibukangptygnuliscommentnyakuranglebihygdibawahsiniygpenting
-   public void StartReeling(FishRarityData rarityData, int reelDifficulty)
+    //start-----------------------------------------sefoksofhsfkdshvishdliugeldknvkfvkdhfkeyginibukangptygnuliscommentnyakuranglebihygdibawahsiniygpenting
+    public void StartReeling(FishRarityData rarityData, int reelDifficulty)
+    {
+        PlayerFishingAnimation.Instance.StartReeling();
 
-{
+        if (reelingLoopSound != null && !reelingAudio.isPlaying)
+        {
+            reelingAudio.clip = reelingLoopSound;
+            reelingAudio.volume = reelingVolume;
+            reelingAudio.Play();
+        }
+
         gameTimer.timerRunning = false;
-        PickNewTargetBehavior();
+        PickNewGreenBehavior();
 
-// ==========================
-// APPLY RARITY MODIFIER
-// ==========================
 
-// movement
-minMoveDuration = rarityData.minMoveDuration;
-maxMoveDuration = rarityData.maxMoveDuration;
+        // ==========================
+        // APPLY RARITY MODIFIER
+        // ==========================
 
-minIdleDuration = rarityData.minIdleDuration;
-maxIdleDuration = rarityData.maxIdleDuration;
+        // movement
+        minMoveDuration = rarityData.minMoveDuration;
+        maxMoveDuration = rarityData.maxMoveDuration;
 
-minSpeedMultiplier = rarityData.minSpeedMultiplier;
-maxSpeedMultiplier = rarityData.maxSpeedMultiplier;
+        minIdleDuration = rarityData.minIdleDuration;
+        maxIdleDuration = rarityData.maxIdleDuration;
 
-// target speed
-targetSpeed =
-    baseTargetSpeed *
-    rarityData.targetSpeedMultiplier *
-    (1f + rarityData.spLossPerSecond * 0.2f);
+        minSpeedMultiplier = rarityData.minSpeedMultiplier;
+        maxSpeedMultiplier = rarityData.maxSpeedMultiplier;
 
-// burst
-burstChance = rarityData.burstChance;
-burstSpeedMultiplier = rarityData.burstSpeedMultiplier;
-minBurstDuration = rarityData.minBurstDuration;
-maxBurstDuration = rarityData.maxBurstDuration;
+        // target speed
+        targetSpeed =
+            baseTargetSpeed *
+            rarityData.targetSpeedMultiplier *
+            (1f + rarityData.spLossPerSecond * 0.2f);
+
+        // burst
+        burstChance = rarityData.burstChance;
+        burstSpeedMultiplier = rarityData.burstSpeedMultiplier;
+        minBurstDuration = rarityData.minBurstDuration;
+        maxBurstDuration = rarityData.maxBurstDuration;
 
 
         // =====================
         // SET GREEN ZONE SIZE
         // =====================
         float shrinkAmount = reelDifficulty * shrinkPerDifficulty;
-float finalHeight = Mathf.Max(
-    baseGreenHeight - shrinkAmount,
-    40f // batas minimum biar masih playable
-);
+        float finalHeight = Mathf.Max(
+            baseGreenHeight - shrinkAmount,
+            40f // batas minimum biar masih playable
+        );
 
-greenZone.SetSizeWithCurrentAnchors(
-    RectTransform.Axis.Vertical,
-    finalHeight
-);
+        greenZone.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical,
+            finalHeight
+        );
 
 
         float barHalf = blueBar.rect.height / 2f;
-    float greenHalf = greenZone.rect.height / 2f;
-    float targetHalf = targetLine.rect.height / 2f;
+        float greenHalf = greenZone.rect.height / 2f;
+        float targetHalf = targetLine.rect.height / 2f;
 
-    // batas hijau (biar ujungnya gak keluar)
-    greenMinY = -barHalf + greenHalf;
-    greenMaxY = barHalf - greenHalf;
+        // batas hijau (biar ujungnya gak keluar)
+        greenMinY = -barHalf + greenHalf;
+        greenMaxY = barHalf - greenHalf;
 
-    // batas target line
-targetMinY = -barHalf + targetHalf;
-targetMaxY = barHalf - targetHalf;
-
-
-
-failTimer = failDelay;
-float offset = Random.Range(-50f, 50f);
-targetLine.anchoredPosition =
-    greenZone.anchoredPosition + Vector2.up * offset;
+        // batas target line
+        targetMinY = -barHalf + targetHalf;
+        targetMaxY = barHalf - targetHalf;
 
 
-    greenVelocity = 0;
-    targetDirection = Random.value > 0.5f ? 1 : -1;
+
+        failTimer = failDelay;
+        float offset = Random.Range(-50f, 50f);
+        targetLine.anchoredPosition =
+            greenZone.anchoredPosition + Vector2.up * offset;
+
+
+        greenVelocity = 0;
+        targetDirection = Random.value > 0.5f ? 1 : -1;
 
         reelingUI.SetActive(true);
-//good luck mahamin code nya
-//WOW MAKASIH
+        //good luck mahamin code nya
+        //WOW MAKASIH
         requiredSP = Random.Range(
             rarityData.minSP,
             rarityData.maxSP
@@ -247,10 +272,13 @@ targetLine.anchoredPosition =
         progressBar.value = 0;
         progressBar.maxValue = requiredSP;
 
-targetSpeed = baseTargetSpeed * (1f + rarityData.spLossPerSecond * 0.2f);
+        targetSpeed = baseTargetSpeed * (1f + rarityData.spLossPerSecond * 0.2f);
 
 
         state = ReelingState.Active;
+
+        if (animator != null)
+            animator.SetBool("IsReeling", true);
     }
     #endregion
 
@@ -258,106 +286,99 @@ targetSpeed = baseTargetSpeed * (1f + rarityData.spLossPerSecond * 0.2f);
     {
         if (state != ReelingState.Active) return;
 
-        HandleGreenZone();
-        HandleTarget();
+        HandleTargetInput();       // PLAYER
+        HandleGreenZoneRandom();   // MUSUH
         HandleSP();
     }
 
+
     #region MOVEMENT
-void HandleGreenZone()
-{
-    if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W))
-        greenVelocity = greenMoveSpeed;
-    else
-        greenVelocity -= greenGravity * Time.deltaTime;
-
-    greenZone.anchoredPosition +=
-        Vector2.up * greenVelocity * Time.deltaTime;
-
-    float clampedY = Mathf.Clamp(
-        greenZone.anchoredPosition.y,
-        greenMinY,
-        greenMaxY
-    );
-
-    greenZone.anchoredPosition =
-        new Vector2(greenZone.anchoredPosition.x, clampedY);
-}
-
-
-
-
-void HandleTarget()
-{
-    moveTimer -= Time.deltaTime;
-
-    if (moveTimer <= 0)
-        PickNewTargetBehavior();
-
-    if (isIdle)
-        return;
-
-    // gerak target
-    targetLine.anchoredPosition +=
-        Vector2.up *
-        targetSpeed *
-        currentSpeedMultiplier *
-        targetDirection *
-        Time.deltaTime;
-
-    // cek batas
-    if (targetLine.anchoredPosition.y >= targetMaxY)
+    void HandleTargetInput()
     {
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W))
+            greenVelocity = greenMoveSpeed;
+        else
+            greenVelocity -= greenGravity * Time.deltaTime;
+
+        targetLine.anchoredPosition +=
+            Vector2.up * greenVelocity * Time.deltaTime;
+
+        float clampedY = Mathf.Clamp(
+            targetLine.anchoredPosition.y,
+            targetMinY,
+            targetMaxY
+        );
+
         targetLine.anchoredPosition =
-            new Vector2(targetLine.anchoredPosition.x, targetMaxY);
-
-        targetDirection = -1;          // ⬇️ BALIK ARAH
-        // PickNewTargetBehavior();       // optional
-        return;
+            new Vector2(targetLine.anchoredPosition.x, clampedY);
     }
 
-    if (targetLine.anchoredPosition.y <= targetMinY)
+
+
+
+    void HandleGreenZoneRandom()
     {
-        targetLine.anchoredPosition =
-            new Vector2(targetLine.anchoredPosition.x, targetMinY);
+        moveTimer -= Time.deltaTime;
 
-        targetDirection = 1;           // ⬆️ BALIK ARAH
-        // PickNewTargetBehavior();       // optional
-        return;
+        if (moveTimer <= 0)
+            PickNewGreenBehavior();
+
+        if (isIdle)
+            return;
+
+        greenZone.anchoredPosition +=
+            Vector2.up *
+            targetSpeed *
+            currentSpeedMultiplier *
+            targetDirection *
+            Time.deltaTime;
+
+        if (greenZone.anchoredPosition.y >= greenMaxY)
+        {
+            greenZone.anchoredPosition =
+                new Vector2(greenZone.anchoredPosition.x, greenMaxY);
+            targetDirection = -1;
+        }
+
+        if (greenZone.anchoredPosition.y <= greenMinY)
+        {
+            greenZone.anchoredPosition =
+                new Vector2(greenZone.anchoredPosition.x, greenMinY);
+            targetDirection = 1;
+        }
     }
-}
 
 
 
-void PickNewTargetBehavior()
-{
-    isIdle = Random.value < 0.25f; // 25% diam
-    isBurst = false;
 
-    if (isIdle)
+    void PickNewGreenBehavior()
     {
-        moveTimer = Random.Range(minIdleDuration, maxIdleDuration);
-        currentSpeedMultiplier = 0f;
-        return;
+        isIdle = Random.value < 0.25f;
+        isBurst = false;
+
+        if (isIdle)
+        {
+            moveTimer = Random.Range(minIdleDuration, maxIdleDuration);
+            currentSpeedMultiplier = 0f;
+            return;
+        }
+
+        targetDirection = Random.value > 0.5f ? 1 : -1;
+
+        if (Random.value < burstChance)
+        {
+            isBurst = true;
+            moveTimer = Random.Range(minBurstDuration, maxBurstDuration);
+            currentSpeedMultiplier = burstSpeedMultiplier;
+        }
+        else
+        {
+            moveTimer = Random.Range(minMoveDuration, maxMoveDuration);
+            currentSpeedMultiplier =
+                Random.Range(minSpeedMultiplier, maxSpeedMultiplier);
+        }
     }
 
-    // tentukan arah
-    targetDirection = Random.value > 0.5f ? 1 : -1;
-
-    // cek burst
-    if (Random.value < burstChance)
-    {
-        isBurst = true;
-        moveTimer = Random.Range(minBurstDuration, maxBurstDuration);
-        currentSpeedMultiplier = burstSpeedMultiplier;
-    }
-    else
-    {
-        moveTimer = Random.Range(minMoveDuration, maxMoveDuration);
-        currentSpeedMultiplier =
-            Random.Range(minSpeedMultiplier, maxSpeedMultiplier);
-    }
-}
 
 
 
@@ -365,48 +386,66 @@ void PickNewTargetBehavior()
 
     #region SP LOGIC
     void HandleSP()
-{
-    bool inside =
-        targetLine.anchoredPosition.y >=
-        greenZone.anchoredPosition.y - greenZone.rect.height / 2 &&
-        targetLine.anchoredPosition.y <=
-        greenZone.anchoredPosition.y + greenZone.rect.height / 2;
-
-    if (failTimer > 0)
     {
-        // grace time aktif → TIDAK ADA SP LOSS
-        if (inside)
-            currentSP += spGainPerSecond * Time.deltaTime;
+        bool inside =
+            targetLine.anchoredPosition.y >=
+            greenZone.anchoredPosition.y - greenZone.rect.height / 2 &&
+            targetLine.anchoredPosition.y <=
+            greenZone.anchoredPosition.y + greenZone.rect.height / 2;
 
-        failTimer -= Time.deltaTime;
-    }
-    else
-    {
-        if (inside)
-            currentSP += spGainPerSecond * Time.deltaTime;
+        if (failTimer > 0)
+        {
+            // grace time aktif → TIDAK ADA SP LOSS
+            if (inside)
+                currentSP += spGainPerSecond * Time.deltaTime;
+
+            failTimer -= Time.deltaTime;
+        }
         else
-            currentSP -= spLossPerSecond * Time.deltaTime;
+        {
+            if (inside)
+                currentSP += spGainPerSecond * Time.deltaTime;
+            else
+                currentSP -= spLossPerSecond * Time.deltaTime;
+        }
+
+        currentSP = Mathf.Clamp(currentSP, 0, requiredSP);
+        progressBar.value = currentSP;
+
+        if (currentSP >= requiredSP)
+        {
+            Success();
+            return;
+        }
+
+        if (currentSP <= 0 && failTimer <= 0)
+            Fail();
     }
-
-    currentSP = Mathf.Clamp(currentSP, 0, requiredSP);
-    progressBar.value = currentSP;
-
-    if (currentSP >= requiredSP)
-    {
-        Success();
-        return;
-    }
-
-    if (currentSP <= 0 && failTimer <= 0)
-        Fail();
-}
-   #endregion
+    #endregion
 
     void Success()
     {
+        PlayerFishingAnimation.Instance.StopReeling();
+
         state = ReelingState.Success;
         reelingUI.SetActive(false);
 
+        if (reelingAudio.isPlaying)
+            reelingAudio.Stop();
+
+        AudioClip chosenSound = null;
+
+        if (fishCaughtSoundA != null && fishCaughtSoundB != null)
+            chosenSound = Random.value < 0.5f ? fishCaughtSoundA : fishCaughtSoundB;
+        else if (fishCaughtSoundA != null)
+            chosenSound = fishCaughtSoundA;
+        else if (fishCaughtSoundB != null)
+            chosenSound = fishCaughtSoundB;
+
+        if (chosenSound != null)
+            reelingAudio.PlayOneShot(chosenSound, fishCaughtVolume);
+
+            
         FishData fish = FishDatabase.Instance.currentFish;
 
         CaughtFish caught = CreateCaughtFish(fish);
@@ -414,7 +453,7 @@ void PickNewTargetBehavior()
         FindObjectOfType<FishRevealController>()
             .ShowFish(fish);
 
-        Debug.Log("succ ess");
+        Debug.Log("success");
         InventoryManager.Instance.AddFish(caught);
     }
 
@@ -441,8 +480,18 @@ void PickNewTargetBehavior()
 
     void Fail()
     {
+        PlayerFishingAnimation.Instance.StopReeling();
+
         state = ReelingState.Fail;
-        Debug.Log("IKAN KABUR!");
         reelingUI.SetActive(false);
+
+        if (reelingAudio.isPlaying)
+            reelingAudio.Stop();
+
+
+        Debug.Log("IKAN KABUR!");
+        CastingController.Instance.isFishing = false;
+        CastingController.Instance.castingLocked = false;
+        GameTimer.Instance.timerRunning = true;
     }
 }

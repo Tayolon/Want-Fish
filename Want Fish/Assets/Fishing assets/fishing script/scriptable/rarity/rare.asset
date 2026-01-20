@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: rare
   m_EditorClassIdentifier: 
   rarity: 2
-  biteChance: 0
-  minSP: 0
-  maxSP: 0
-  spLossPerSecond: 0
-  minMoveDuration: 0.2
-  maxMoveDuration: 0.8
-  minIdleDuration: 0.1
-  maxIdleDuration: 0.6
-  minSpeedMultiplier: 0.6
-  maxSpeedMultiplier: 1.4
-  targetSpeedMultiplier: 1
+  biteChance: 25
+  minSP: 15
+  maxSP: 25
+  spLossPerSecond: 1.5
+  minMoveDuration: 0.3
+  maxMoveDuration: 1.2
+  minIdleDuration: 0.7
+  maxIdleDuration: 0.9
+  minSpeedMultiplier: 0.9
+  maxSpeedMultiplier: 1.8
+  targetSpeedMultiplier: 3
   burstChance: 0.2
   burstSpeedMultiplier: 2.2
   minBurstDuration: 0.15

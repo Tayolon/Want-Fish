@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pancingan stabil
   m_EditorClassIdentifier: 
   UpgradeName: Pancingan Stabil
-  UpgradeSprite: {fileID: 21300000, guid: 14d0d9eae1cee449a8324d0f89c33e68, type: 3}
+  UpgradeSprite: {fileID: -7735542175006869018, guid: 249cda0723e76174bb999b10fc5e5d9b, type: 3}
   UpgradeDescriptions: Mengurangi kecepatan bergerak garis hijau sebanyak 1.
   SingleTimeUpgrade: 0
   Cost: 150

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Manta Ray
+  m_EditorClassIdentifier: 
+  fishName: Manta Ray
+  rarity: 4
+  rarityData: {fileID: 11400000, guid: 0908d04d5df284b20975824ef069b8b0, type: 2}
+  fishSprite: {fileID: -5820244037408731318, guid: 79d6777adb9f4da41ae8a04a269eeff0, type: 3}
+  minWeight: 1000
+  maxWeight: 960
+  baseValue: 1

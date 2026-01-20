@@ -8,14 +8,6 @@ public class PermanentUpgradeManager : MonoBehaviour
     public List<PermanentUpgradeData> upgrades = new();
     private Dictionary<string, int> levels = new();
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F12))
-        {
-            PermanentUpgradeManager.Instance.FullReset();
-        }
-    }
-
     void Awake()
     {
         if (Instance == null)
@@ -54,16 +46,18 @@ public class PermanentUpgradeManager : MonoBehaviour
         CurrencyManager.Instance.AddFishCoin(-GetCost(u));
         levels[u.id] = GetLevel(u.id) + 1;
 
-        Save(u.id);
+        SaveManager.Instance.SaveAll();
     }
     
-    void Save(string id)
+    public void SaveAll()
     {
-        PlayerPrefs.SetInt($"Upgrade_{id}", levels[id]);
-        PlayerPrefs.Save();
+        foreach (var pair in levels)
+        {
+            PlayerPrefs.SetInt($"Upgrade_{pair.Key}", pair.Value);
+        }
     }
 
-    void LoadAll()
+    public void LoadAll()
     {
         foreach (var u in upgrades)
         {
@@ -74,11 +68,15 @@ public class PermanentUpgradeManager : MonoBehaviour
 
     public void FullReset()
     {
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
         levels.Clear();
 
-        Debug.Log("ALL DATA KILLED [PermUpgManager]");
+        foreach (var u in upgrades)
+        {
+            levels[u.id] = 0;
+        }
+
+        SaveAll();
+        PlayerPrefs.Save();
     }
 
 }

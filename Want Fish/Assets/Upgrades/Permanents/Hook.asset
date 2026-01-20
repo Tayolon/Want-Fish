@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: hook
   displayName: Hook
-  level: 0
-  maxLevel: 5
+  maxLevel: 10
   baseCost: 250

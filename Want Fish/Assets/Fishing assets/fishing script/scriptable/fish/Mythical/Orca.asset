@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Orca
+  m_EditorClassIdentifier: 
+  fishName: Orca
+  rarity: 5
+  rarityData: {fileID: 11400000, guid: 8cf3275614b5542ddb288e2c1fceb8a1, type: 2}
+  fishSprite: {fileID: 4047740016885237708, guid: 448a549c64d88a04495fe3df8d7a0db2, type: 3}
+  minWeight: 1300
+  maxWeight: 1500
+  baseValue: 1

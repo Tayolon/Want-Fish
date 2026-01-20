@@ -30,6 +30,7 @@ public class DeathManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         RunManager.Instance.EndRun();
+        SaveManager.Instance.SaveAll();
         SceneManager.LoadScene("FishingHub");
     }
 }

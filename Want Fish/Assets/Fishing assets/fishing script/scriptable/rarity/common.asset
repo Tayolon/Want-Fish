@@ -15,14 +15,14 @@ MonoBehaviour:
   rarity: 0
   biteChance: 60
   minSP: 3
-  maxSP: 10
-  spLossPerSecond: 0
+  maxSP: 5
+  spLossPerSecond: 0.5
   minMoveDuration: 0.2
   maxMoveDuration: 0.8
-  minIdleDuration: 0.1
-  maxIdleDuration: 0.6
+  minIdleDuration: 1
+  maxIdleDuration: 2
   minSpeedMultiplier: 0.6
-  maxSpeedMultiplier: 1.4
+  maxSpeedMultiplier: 1.2
   targetSpeedMultiplier: 1
   burstChance: 0.2
   burstSpeedMultiplier: 2.2

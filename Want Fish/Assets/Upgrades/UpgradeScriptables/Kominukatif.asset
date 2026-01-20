@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Kominukatif
   m_EditorClassIdentifier: 
   UpgradeName: Kominukatif
-  UpgradeSprite: {fileID: 21300000, guid: d475de1fbd6d540feb44dce995e3f5eb, type: 3}
+  UpgradeSprite: {fileID: -3868303880242703529, guid: 1c73284c9e1bd784b877865533ee1008, type: 3}
   UpgradeDescriptions: Menambah harga ikan yang dijual sebesar 5%.
   SingleTimeUpgrade: 0
   Cost: 5000

@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: epic
   m_EditorClassIdentifier: 
   rarity: 3
-  biteChance: 0
-  minSP: 0
-  maxSP: 0
-  spLossPerSecond: 0
-  minMoveDuration: 0.2
-  maxMoveDuration: 0.8
-  minIdleDuration: 0.1
-  maxIdleDuration: 0.6
-  minSpeedMultiplier: 0.6
-  maxSpeedMultiplier: 1.4
-  targetSpeedMultiplier: 1
+  biteChance: 10
+  minSP: 25
+  maxSP: 40
+  spLossPerSecond: 2
+  minMoveDuration: 0.4
+  maxMoveDuration: 1.6
+  minIdleDuration: 0.6
+  maxIdleDuration: 0.8
+  minSpeedMultiplier: 1
+  maxSpeedMultiplier: 2
+  targetSpeedMultiplier: 4
   burstChance: 0.2
   burstSpeedMultiplier: 2.2
   minBurstDuration: 0.15

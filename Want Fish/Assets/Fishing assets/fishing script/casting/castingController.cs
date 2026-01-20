@@ -8,13 +8,17 @@ public class CastingController : MonoBehaviour
     public RectTransform bar;
     public RectTransform indicator;
     public float speed = 600f;
-
     private int direction = 1;
-    private bool isCasting = false;
+    public bool isCasting = false;
 
     public int reelDifficulty;
 
     public GameObject castingBarUI;
+
+    public AudioClip fishBiteSound;
+    public float fishBiteVolume = 0.6f;
+
+    private AudioSource audioSource;
 
 
     float redLimit;
@@ -23,38 +27,48 @@ public class CastingController : MonoBehaviour
     float yellowLimit;
 
     [Header("Color Layers")]
-public RectTransform redLayer;
-public RectTransform orangeLayer;
-public RectTransform greenLayer;
-public RectTransform yellowLayer;
+    public RectTransform redLayer;
+    public RectTransform orangeLayer;
+    public RectTransform greenLayer;
+    public RectTransform yellowLayer;
 
     [Header("Casting Stop Delay")]
     public float stopDelay = 0.4f;
 
-[Header("Casting Result UI")]
-public CastingResultController resultUI;
+    [Header("Casting Result UI")]
+    public CastingResultController resultUI;
 
 
     [Header("Difficulty Wait Penalty")]
-public float minWaitPenaltyPerDifficulty = 3f;
-public float maxWaitPenaltyPerDifficulty = 5f;
+    public float minWaitPenaltyPerDifficulty = 3f;
+    public float maxWaitPenaltyPerDifficulty = 5f;
 
 
     [Header("Waiting Fish Settings")]
-public float minBiteTime = 1.5f;
-public float maxBiteTime = 4f;
+    public float minBiteTime = 1.5f;
+    public float maxBiteTime = 4f;
 
-[Header("Fish Bite UI")]
-public FishBiteController fishBiteUI;
+    [Header("Fish Bite UI")]
+    public FishBiteController fishBiteUI;
 
     private bool isWaitingFish = false;
 
 
-public ReelingController reelingController;
-public FishDatabase fishDatabase;
+    public ReelingController reelingController;
+    public FishDatabase fishDatabase;
+    public bool isFishing;
+    private bool antiSpam=false;
+    public bool castingLocked = false;
+
 
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+
         if (Instance == null)
             Instance = this;
         else
@@ -67,6 +81,12 @@ public FishDatabase fishDatabase;
         orangeLimit = redLimit * 0.7f;
         greenLimit = redLimit * 0.4f;
         yellowLimit = redLimit * 0.05f;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
     }
 
     void Update()
@@ -91,82 +111,92 @@ public FishDatabase fishDatabase;
         maxBiteTime *= modifier;
     }
 
-public void StartCasting()
-{
-    if (InventoryManager.Instance != null &&
-        InventoryManager.Instance.IsFull())
+    public void StartCasting()
     {
-        Debug.Log("inv full [CastingController]");
-        return;
+        if (InventoryManager.Instance != null &&
+            InventoryManager.Instance.IsFull())
+        {
+            Debug.Log("inv full [CastingController]");
+            return;
+        }
+
+        if (isWaitingFish) return;
+        if (IsBusy()) return;
+
+        castingBarUI.SetActive(true);
+        isCasting = true;
+
+        direction = 1;
+        indicator.anchoredPosition =
+            new Vector2(-redLimit, indicator.anchoredPosition.y);
+
+        reelDifficulty = 0;
+        RandomizeLayerPositions();
+        StartCoroutine(AntiSpamDelay());
     }
 
-    if (isWaitingFish) return;
-    if (IsBusy()) return;
-
-    castingBarUI.SetActive(true);
-    isCasting = true;
-    direction = 1;
-
-    indicator.anchoredPosition =
-        new Vector2(-redLimit, indicator.anchoredPosition.y);
-
-    reelDifficulty = 0;
-    RandomizeLayerPositions();
-}
+    private IEnumerator AntiSpamDelay()
+    {
+        antiSpam = true;
+        yield return new WaitForSeconds(0.3f);
+        antiSpam = false;
+    }
 
 
+    bool IsInside(RectTransform layer, float indicatorX)
+    {
+        float half = layer.rect.width / 2f;
+        float center = layer.anchoredPosition.x;
 
-bool IsInside(RectTransform layer, float indicatorX)
-{
-    float half = layer.rect.width / 2f;
-    float center = layer.anchoredPosition.x;
+        return indicatorX >= center - half &&
+               indicatorX <= center + half;
+    }
 
-    return indicatorX >= center - half &&
-           indicatorX <= center + half;
-}
+    IEnumerator StopCastingDelay()
+    {
+        // tunggu sebentar biar player bisa lihat hasil
+        yield return new WaitForSeconds(stopDelay);
 
-IEnumerator StopCastingDelay()
-{
-    // tunggu sebentar biar player bisa lihat hasil
-    yield return new WaitForSeconds(stopDelay);
+        castingBarUI.SetActive(false);
 
-    castingBarUI.SetActive(false);
+        PlayerFishingAnimation.Instance.PlayCastingOnce();
 
-    EvaluateZone();
-    StartWaitingFish();
-}
-
-
-public void StopCasting()
-{
-    if (!isCasting) return;
-
-    isCasting = false; // hentikan gerakan indicator
-    StartCoroutine(StopCastingDelay());
-}
+        EvaluateZone();
+        StartWaitingFish();
+    }
 
 
-void RandomizeLayerPositions()
-{
-    float barHalf = redLimit;
+    public void StopCasting()
+    {
+        if (!isCasting) return;
 
-    RandomizeLayer(orangeLayer, barHalf);
-    RandomizeLayer(greenLayer, barHalf);
-    RandomizeLayer(yellowLayer, barHalf);
-}
+        isCasting = false; // hentikan gerakan indicator
+        castingLocked = true;
+        StartCoroutine(StopCastingDelay());
+    }
 
-void RandomizeLayer(RectTransform layer, float barHalf)
-{
-    float layerHalf = layer.rect.width / 2f;
 
-    float minX = -barHalf + layerHalf;
-    float maxX = barHalf - layerHalf;
+    void RandomizeLayerPositions()
+    {
+        float barHalf = redLimit;
 
-    float randomX = Random.Range(minX, maxX);
+        RandomizeLayer(orangeLayer, barHalf);
+        RandomizeLayer(greenLayer, barHalf);
+        RandomizeLayer(yellowLayer, barHalf);
+    }
 
-    layer.anchoredPosition =
-        new Vector2(randomX, layer.anchoredPosition.y);
-}
+    void RandomizeLayer(RectTransform layer, float barHalf)
+    {
+        float layerHalf = layer.rect.width / 2f;
+
+        float minX = -barHalf + layerHalf;
+        float maxX = barHalf - layerHalf;
+
+        float randomX = Random.Range(minX, maxX);
+
+        layer.anchoredPosition =
+            new Vector2(randomX, layer.anchoredPosition.y);
+    }
 
 
     public bool IsCasting()
@@ -174,43 +204,45 @@ void RandomizeLayer(RectTransform layer, float barHalf)
         return isCasting;
     }
 
-   void EvaluateZone()
-{
-    float x = indicator.anchoredPosition.x;
-
-    if (IsInside(yellowLayer, x))
+    void EvaluateZone()
     {
-        reelDifficulty += 0;
-        resultUI.ShowYellow();
-    }
-    else if (IsInside(greenLayer, x))
-    {
-        reelDifficulty += 1;
-        resultUI.ShowGreen();
-    }
-    else if (IsInside(orangeLayer, x))
-    {
-        reelDifficulty += 3;
-        resultUI.ShowOrange();
-    }
-    else
-    {
-        reelDifficulty += 5;
-        resultUI.ShowRed();
+        float x = indicator.anchoredPosition.x;
+
+        if (IsInside(yellowLayer, x))
+        {
+            reelDifficulty += 0;
+            resultUI.ShowYellow();
+        }
+        else if (IsInside(greenLayer, x))
+        {
+            reelDifficulty += 1;
+            resultUI.ShowGreen();
+        }
+        else if (IsInside(orangeLayer, x))
+        {
+            reelDifficulty += 3;
+            resultUI.ShowOrange();
+        }
+        else
+        {
+            reelDifficulty += 5;
+            resultUI.ShowRed();
+        }
+
+        Debug.Log("Total Difficulty: " + reelDifficulty);
     }
 
-    Debug.Log("Total Difficulty: " + reelDifficulty);
-}
 
-
-void StartWaitingFish()
-{
-    if (!isWaitingFish)
-        StartCoroutine(WaitFishBite());
-}
+    void StartWaitingFish()
+    {
+        if (!isWaitingFish)
+            castingLocked = true;
+            StartCoroutine(WaitFishBite());
+    }
 
     IEnumerator WaitFishBite()
     {
+        isFishing = true;
         isWaitingFish = true;
 
         float baseWait = Random.Range(minBiteTime, maxBiteTime);
@@ -233,6 +265,9 @@ void StartWaitingFish()
         Debug.Log("Ikan menggigit!");
         isWaitingFish = false;
 
+        if (fishBiteSound != null)
+            audioSource.PlayOneShot(fishBiteSound, fishBiteVolume);
+
         FishData fish = fishDatabase.GetRandomFish();
         fishBiteUI.Show(fish.rarity);
 
@@ -240,28 +275,38 @@ void StartWaitingFish()
 
     }
 
-IEnumerator StartReelingDelay(FishData fish)
-{
-    yield return new WaitForSeconds(0.8f); // tunggu popup selesai
-
-    reelingController.StartReeling(
-        fish.rarityData,
-        reelDifficulty
-    );
-}
-
-    public bool IsBusy()
+    IEnumerator StartReelingDelay(FishData fish)
     {
+        yield return new WaitForSeconds(0.8f); // tunggu popup selesai
+
+        reelingController.StartReeling(
+            fish.rarityData,
+            reelDifficulty
+        );
+    }
+
+    public bool IsBusy()    
+    {
+        if (castingLocked)
+            return true;
+            
+        if (antiSpam)
+            return true;
+
+        if (isFishing)
+            return true;
+
         if (isWaitingFish)
             return true;
 
         if (reelingController != null && reelingController.IsReeling())
             return true;
 
-        FishRevealController reveal =
-            FindObjectOfType<FishRevealController>();
-
+        FishRevealController reveal = FindObjectOfType<FishRevealController>();
         if (reveal != null && reveal.IsShowing())
+            return true;
+
+        if (GameTimer.Instance != null && GameTimer.Instance.HasDayEnded())
             return true;
 
         return false;
@@ -270,24 +315,22 @@ IEnumerator StartReelingDelay(FishData fish)
 
 
 
-void StartReeling()
-{
-    FishData fish = fishDatabase.GetRandomFish();
 
-    if (fish == null)
+    void StartReeling()
     {
-        Debug.LogError("Fish NULL!");
-        return;
+        FishData fish = fishDatabase.GetRandomFish();
+
+        if (fish == null)
+        {
+            Debug.LogError("Fish NULL!");
+            return;
+        }
+
+        Debug.Log("Dapat ikan: " + fish.fishName);
+
+        reelingController.StartReeling(
+            fish.rarityData,
+            reelDifficulty
+        );
     }
-
-    Debug.Log("Dapat ikan: " + fish.fishName);
-
-    reelingController.StartReeling(
-        fish.rarityData,
-        reelDifficulty
-    );
-}
-
-
-
 }

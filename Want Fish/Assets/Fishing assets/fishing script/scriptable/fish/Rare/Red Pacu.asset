@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Red Pacu
+  m_EditorClassIdentifier: 
+  fishName: Red Pacu
+  rarity: 2
+  rarityData: {fileID: 11400000, guid: b1848b0fa1fe043969e3b75b0d40df49, type: 2}
+  fishSprite: {fileID: 357698356170617703, guid: 077a59248ce44e3459832a286e023ba7, type: 3}
+  minWeight: 3
+  maxWeight: 5
+  baseValue: 230

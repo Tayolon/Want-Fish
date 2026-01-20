@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Narwal
+  m_EditorClassIdentifier: 
+  fishName: Narwal
+  rarity: 6
+  rarityData: {fileID: 11400000, guid: 45f57adf7580248f19f70b85e73c7b9f, type: 2}
+  fishSprite: {fileID: -2078341389811456187, guid: 4ce6f0ab4b91d724cba82e08d56ac66c, type: 3}
+  minWeight: 16
+  maxWeight: 27
+  baseValue: 100

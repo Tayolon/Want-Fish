@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8880623c9c8ef41d19f4d3deecc2965c, type: 3}
+  m_Name: Great White Shark
+  m_EditorClassIdentifier: 
+  fishName: Great White Shark
+  rarity: 5
+  rarityData: {fileID: 11400000, guid: 8cf3275614b5542ddb288e2c1fceb8a1, type: 2}
+  fishSprite: {fileID: 1633003590439616605, guid: d6949d168546b3c4a81fb308b168a79a, type: 3}
+  minWeight: 1000
+  maxWeight: 1100
+  baseValue: 1

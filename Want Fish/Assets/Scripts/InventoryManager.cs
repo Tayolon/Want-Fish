@@ -10,6 +10,11 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance;
     public GameTimer gameTimer;
 
+    public AudioClip sellSound;
+    public float sellVolume = 0.6f;
+
+    private AudioSource audioSource;
+
     public bool sellTime;
     public int sellMult = 100;
     public List<CaughtFish> fishes = new();
@@ -33,6 +38,12 @@ public class InventoryManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
     }
 
     void Start()
@@ -112,6 +123,9 @@ public class InventoryManager : MonoBehaviour
 
     public void SellAll()
     {
+        if (sellSound != null)
+            audioSource.PlayOneShot(sellSound, sellVolume);
+
         if (!sellTime) return;
         if (fishes.Count == 0) return;
 

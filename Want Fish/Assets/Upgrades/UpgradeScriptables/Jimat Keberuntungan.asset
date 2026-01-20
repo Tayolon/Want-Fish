@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Jimat Keberuntungan
   m_EditorClassIdentifier: 
   UpgradeName: Jimat Keberuntungan
-  UpgradeSprite: {fileID: 21300000, guid: 14d0d9eae1cee449a8324d0f89c33e68, type: 3}
+  UpgradeSprite: {fileID: 8969072024879704299, guid: f1adba4cbf3082b4a827c0dba26384dc, type: 3}
   UpgradeDescriptions: Ikan dengan rarity Legend keatas akan lebih sering didapatkan.
   SingleTimeUpgrade: 0
   Cost: 500

@@ -154,6 +154,8 @@ public bool IsShowing()
     {
         gameTimer.timerRunning = true;
         Hide();
+        CastingController.Instance.isFishing=false;
+        CastingController.Instance.castingLocked=false;
     }
 }
 

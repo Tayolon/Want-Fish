@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Handle yang baik
   m_EditorClassIdentifier: 
   UpgradeName: Handle yang baik
-  UpgradeSprite: {fileID: 21300000, guid: 14d0d9eae1cee449a8324d0f89c33e68, type: 3}
+  UpgradeSprite: {fileID: 197126828810734533, guid: 0fb5c6a581e88b04d8c2242eeb23dd9d, type: 3}
   UpgradeDescriptions: Mengurangi gerak gravitasi garis hitam sebanyak 1.
   SingleTimeUpgrade: 0
   Cost: 100

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pemberuan Kapasitas
   m_EditorClassIdentifier: 
   UpgradeName: Pembaruan Kapasitas
-  UpgradeSprite: {fileID: 21300000, guid: 14d0d9eae1cee449a8324d0f89c33e68, type: 3}
+  UpgradeSprite: {fileID: -6901920299285223911, guid: b80067275a6002e4f8ff097f29ec06db, type: 3}
   UpgradeDescriptions: "Menambah 3 slot inventory.\t"
   SingleTimeUpgrade: 0
   Cost: 250

@@ -7,6 +7,8 @@ public class Kapal : Interaction
 
     public override void Interact()
     {
+        CurrencyManager.Instance.ResetRunData();
+        MusicBg.Instance.FunPolice();
         Debug.Log("Menuju balik cakrawala...");
         SceneManager.LoadScene(sceneTujuan);
     }

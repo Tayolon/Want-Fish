@@ -15,6 +15,11 @@ public class UIManager : MonoBehaviour
     public GameObject deathUI;
     public Button deathButton;
 
+    public AudioClip deathSound;
+    public float deathVolume = 0.6f;
+
+    private AudioSource audioSource;
+
     void Awake()
     {
         if (Instance == null)
@@ -24,6 +29,12 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
     }
 
     void Start()
@@ -55,6 +66,9 @@ public class UIManager : MonoBehaviour
 
     public void ShowDeath()
     {
+        if (deathSound != null)
+            audioSource.PlayOneShot(deathSound, deathVolume);
+            
         if (deathUI == null) return;
 
         deathUI.SetActive(true);

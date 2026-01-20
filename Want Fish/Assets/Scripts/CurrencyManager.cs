@@ -25,7 +25,7 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    void Updaate()
+    void Update()
     {
         UIManager.Instance?.RefreshCurrency();
     }
@@ -49,7 +49,7 @@ public class CurrencyManager : MonoBehaviour
         if (perak < quota) return false;
 
         perak -= quota;
-        quota = Mathf.CeilToInt(quota * 1.2f);
+        quota = Mathf.CeilToInt(quota * 1.5f);
         UIManager.Instance?.RefreshCurrency();
         return true;
     }
@@ -61,19 +61,18 @@ public class CurrencyManager : MonoBehaviour
         UIManager.Instance?.RefreshCurrency();
     }
 
-    void ResetRunData()
+    public void ResetRunData()
     {
         perak = 0;
         quota = 1000;
     }
 
-    void SaveFishCoin()
+    public void SaveFishCoin()
     {
         PlayerPrefs.SetInt("FishCoin", fishCoin);
-        PlayerPrefs.Save();
     }
 
-    void LoadFishCoin()
+    public void LoadFishCoin()
     {
         fishCoin = PlayerPrefs.GetInt("FishCoin", 0);
     }

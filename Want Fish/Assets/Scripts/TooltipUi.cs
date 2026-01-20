@@ -6,7 +6,10 @@ using UnityEngine.UI;
 
 public class ItemTooltipUI : MonoBehaviour
 {
+    private AudioSource audioSource;
     public static ItemTooltipUI Instance;
+    public AudioClip sellSound;
+    public float sellVolume = 0.6f;
     CaughtFish currentFish;
 
     public GameObject root;
@@ -17,6 +20,10 @@ public class ItemTooltipUI : MonoBehaviour
     public Button discardBtn;
     public Button sellBtn;
     public TMP_Text sellText;
+    
+
+    public int a;
+    public int e;
 
     bool isPinned;
 
@@ -25,6 +32,12 @@ public class ItemTooltipUI : MonoBehaviour
     {
         Instance = this;
         root.SetActive(false);
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
 
         discardBtn.onClick.AddListener(DiscardCurrentFish);
         sellBtn.onClick.AddListener(SellCurrentFish);
@@ -102,11 +115,21 @@ public class ItemTooltipUI : MonoBehaviour
 
     void SellCurrentFish()
     {
+        if (sellSound != null && audioSource != null)
+            audioSource.PlayOneShot(sellSound, sellVolume);
+
         if (currentFish == null) return;
 
-        InventoryManager.Instance.RemoveFish(currentFish);  
-        CurrencyManager.Instance.Add(currentFish.value);
-        RunManager.Instance.AddFishCoin(currentFish.value / 100);
+        int value = currentFish.value;
+
+        InventoryManager.Instance.RemoveFish(currentFish);
+
+        value = value * InventoryManager.Instance.sellMult / 100;
+
+        CurrencyManager.Instance.Add(value);
+        RunManager.Instance.AddFishCoin(value / 100);
+
+        Debug.Log($"Sold {currentFish.data.fishName} for {value}$ [InventoryManager]");
 
         currentFish = null;
         Unpin();
@@ -125,7 +148,7 @@ public class ItemTooltipUI : MonoBehaviour
         // Follow mouse ONLY if not pinned
         if (!isPinned)
         {  
-            transform.position = Input.mousePosition + new Vector3(205, 80, 0);
+            transform.position = Input.mousePosition + new Vector3(a, e, 0);
         }
 
         // Click anywhere else to unpin

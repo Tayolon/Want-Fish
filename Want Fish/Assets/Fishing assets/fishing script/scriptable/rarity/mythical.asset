@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: mythical
   m_EditorClassIdentifier: 
   rarity: 5
-  biteChance: 0
-  minSP: 0
-  maxSP: 0
-  spLossPerSecond: 0
-  minMoveDuration: 0.2
-  maxMoveDuration: 0.8
-  minIdleDuration: 0.1
-  maxIdleDuration: 0.6
-  minSpeedMultiplier: 0.6
-  maxSpeedMultiplier: 1.4
-  targetSpeedMultiplier: 1
+  biteChance: 4.5
+  minSP: 50
+  maxSP: 60
+  spLossPerSecond: 5
+  minMoveDuration: 0.5
+  maxMoveDuration: 2
+  minIdleDuration: 0.4
+  maxIdleDuration: 0.8
+  minSpeedMultiplier: 1.2
+  maxSpeedMultiplier: 2.4
+  targetSpeedMultiplier: 6
   burstChance: 0.2
   burstSpeedMultiplier: 2.2
   minBurstDuration: 0.15

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Umpan Berkualitas
   m_EditorClassIdentifier: 
   UpgradeName: Umpan Berkualitas
-  UpgradeSprite: {fileID: 21300000, guid: 14d0d9eae1cee449a8324d0f89c33e68, type: 3}
+  UpgradeSprite: {fileID: 6467851829492438195, guid: e72517434e450fa4498b70e80560fa80, type: 3}
   UpgradeDescriptions: 'Waktu menunggu untuk ikan menggigit umpan -5%. '
   SingleTimeUpgrade: 0
   Cost: 100
